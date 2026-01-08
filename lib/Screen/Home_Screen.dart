@@ -1,17 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:todo_app_level_1/Screen/Add_Screen.dart';
 
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  List<Map<String, dynamic>> Task=[];
+  String?  title;
+  String? description;
+   String? dueDate;
+
+
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
+
+
 }
 
 class _HomeScreenState extends State<HomeScreen> {
   /// Toggler Button State
   bool isAllSelected=true;
+  bool isCompletedSelected=true;
+  /// Variables
+
   
   @override
   Widget build(BuildContext context) {
@@ -35,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             /// Child Column
             Padding(
-              padding: const EdgeInsets.only(top: 30,left: 20,right: 20),
+              padding: const EdgeInsets.only(top: 30,left: 8,right: 8),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -45,7 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   SizedBox(height: 20,),
                   /// Toggler Button Section
                   Container(height: 40,
-                    width: 320,
+                    width: 340,
 
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
@@ -64,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         },
                           child: Container(
                             height: 40,
-                            width:160 ,
+                            width:170 ,
                             decoration:BoxDecoration(
                               borderRadius: BorderRadius.circular(20),
                               color:isAllSelected? Colors.blue : Colors.white
@@ -83,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         },
                           child: Container(
                             height: 40,
-                            width:160 ,
+                            width:170 ,
                             decoration:BoxDecoration(
                                 borderRadius: BorderRadius.circular(20),
                                 color:isAllSelected? Colors.white : Colors.blue
@@ -98,17 +109,64 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   SizedBox(height: 10,),
-                  /// Task Card
-                  Card(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20),),
-                  elevation: 5,
-                  child: ListTile(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                    tileColor: Colors.white,
-                    leading: Icon(Icons.check_box,color: Colors.blue,),
-                    title: Text("Task 1"),
-                    subtitle: Text("Description"),
-                    trailing: Icon(Icons.more_vert),
-                  ),
+                  /// List TileTask Card
+                  SizedBox(
+                    child: Card(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20),),
+                    elevation: 5,
+                    child: ListTile(
+
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      tileColor: Colors.white,
+                      leading: Stack(
+                        children: [
+                        GestureDetector( onTap: (){
+
+                          setState(() {
+                            isCompletedSelected=!isCompletedSelected;
+                            print("Unselected");
+                          });
+                        },
+                          child: Container(
+                            width: 25,
+                            height: 25,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(100),
+                              color:isCompletedSelected? Colors.transparent : Colors.blue,
+                              border: BoxBorder.all(color: Colors.blue,width: 1)
+                            ),
+                            child: Icon(Icons.check,color:isCompletedSelected? Colors.transparent:Colors.white,size: 20,),
+
+                          ),
+                        ),
+
+                        ],
+                        ///END of Stack
+                      ),
+                      title: Expanded(child: Text(widget.title??"No Title",style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),)),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          /// Edit and Delete Task
+                          Row(
+
+                            children: [
+                              Expanded(child: Text(widget.description??"No Description",style: TextStyle(fontSize: 14,color: Colors.black),)),SizedBox(width: 32,),
+                              Icon(FontAwesomeIcons.penToSquare,color: Colors.indigo,size: 18,),
+                              SizedBox(width: 20,),
+                              Icon(FontAwesomeIcons.trash,color: Colors.red,size: 18,),
+                            ],
+                          ),
+                          Container(width: 100,
+                            height: 30,
+                            child: Text(  widget.dueDate ?? "No Due Date",style: TextStyle(fontSize: 14,color: Colors.grey),),
+
+                            ),
+
+                        ],
+                      ),
+
+                    ),
+                    ),
                   ),
 
                 ],
@@ -122,8 +180,15 @@ class _HomeScreenState extends State<HomeScreen> {
       /// Floating Action Button
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.indigoAccent,
-        onPressed: (){
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>AddTask()));
+        onPressed: ()async{
+          final Map<String,dynamic>? result = await Navigator.push(context, MaterialPageRoute(builder: (context)=>AddTask()));
+          if(result!=null){
+            setState(() {
+              widget.title=result["title"];
+              widget.description=result["description"];
+              widget.dueDate=result["dueDate"];
+            });
+          }
       },
       child: Icon(Icons.add,color: Colors.white),),
     );

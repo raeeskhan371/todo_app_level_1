@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo_app_level_1/Screen/Home_Screen.dart';
 
 class AddTask extends StatefulWidget {
   const AddTask({super.key});
@@ -8,6 +9,11 @@ class AddTask extends StatefulWidget {
 }
 
 class _AddTaskState extends State<AddTask> {
+  TextEditingController titleController=TextEditingController();
+  TextEditingController descriptionController=TextEditingController();
+  TextEditingController dueDateController=TextEditingController();
+  Map<String,dynamic> taskMap={};
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -49,6 +55,8 @@ class _AddTaskState extends State<AddTask> {
                     children: [
                       /// TextField Title
                       TextFormField(
+                        controller: titleController,
+
                         decoration: InputDecoration(
                             prefixIcon: Icon(Icons.title,color: Colors.grey,),
                             labelText: "Title",
@@ -66,6 +74,7 @@ class _AddTaskState extends State<AddTask> {
                       /// TextField Description
                       const SizedBox(height:20,),
                       TextFormField(
+                        controller:  descriptionController,
                         maxLines: 2,
                           textAlignVertical: TextAlignVertical.center,
                           decoration: InputDecoration(
@@ -85,8 +94,9 @@ class _AddTaskState extends State<AddTask> {
                           )
                       ),
                       const SizedBox(height:20,),
-                      /// TimePicker Field
+                      /// DueDate Field
                       TextFormField(
+                        controller: dueDateController,
                         readOnly: false,
                           textAlignVertical: TextAlignVertical.center,
                           decoration: InputDecoration(
@@ -115,8 +125,14 @@ class _AddTaskState extends State<AddTask> {
 
                           ),
                           onPressed: (){
+                            taskMap={
+                              "title":titleController.text,
+                              "description":descriptionController.text,
+                              "dueDate":dueDateController.text};
+                              Navigator.pop(context,taskMap);
 
-                      }, child: Text("Add Task",style: TextStyle(fontSize: 18,),
+                            },
+                       child: Text("Add Task",style: TextStyle(fontSize: 18,),
                       ),)
 
                     ],
