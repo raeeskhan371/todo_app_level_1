@@ -12,7 +12,7 @@ class _AddTaskState extends State<AddTask> {
   TextEditingController titleController=TextEditingController();
   TextEditingController descriptionController=TextEditingController();
   TextEditingController dueDateController=TextEditingController();
-  Map<String,dynamic> taskMap={};
+
 
   @override
   Widget build(BuildContext context) {
@@ -125,15 +125,16 @@ class _AddTaskState extends State<AddTask> {
 
                           ),
                           onPressed: (){
-                            taskMap={
-                              "title":titleController.text,
-                              "description":descriptionController.text,
-                              "dueDate":dueDateController.text};
-                              Navigator.pop(context,taskMap);
+                            Navigator.pop(context,{
+                                "title":titleController.text,
+                                "description":descriptionController.text,
+                                "dueDate":dueDateController.text});
+
 
                             },
                        child: Text("Add Task",style: TextStyle(fontSize: 18,),
-                      ),)
+                      ),
+  )
 
                     ],
                   ),
