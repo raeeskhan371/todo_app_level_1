@@ -183,8 +183,132 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 ),
                                 SizedBox(width: 32),
-                                Icon(FontAwesomeIcons.penToSquare,
-                                    color: Colors.indigo, size: 18),
+                                GestureDetector(
+                                  onTap: (){
+
+                                  },
+
+                                  child: GestureDetector( onTap: (){
+                                     showModalBottomSheet(context: context, builder:(context) {
+                                       return Container(
+                                         width: double.infinity,
+                                         child: Padding(
+                                           padding: const EdgeInsets.only(left: 20,right: 20,),
+                                           child: SingleChildScrollView(
+                                             child: Container(
+                                               child: Column(
+                                                 mainAxisAlignment: MainAxisAlignment.center,
+                                                 children: [
+                                                   SizedBox(height: 20,),
+                                                   /// Update Task Text
+                                                   Text("Update Task",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
+                                                   SizedBox(height: 10,),
+                                                   /// TextField Title
+                                                   TextFormField(
+                                                       decoration: InputDecoration(
+                                                         prefixIcon: Icon(Icons.title,color: Colors.grey,),
+                                                         labelText: "Title",
+                                                         hintText: "Enter Title",
+                                                         enabledBorder: OutlineInputBorder(
+                                                             borderRadius: BorderRadius.circular(10),
+                                                             borderSide: BorderSide(color:Colors.grey.shade500,width: 1)
+                                                         ),
+                                                         focusedBorder: OutlineInputBorder(
+                                                             borderRadius: BorderRadius.circular(15),
+                                                             borderSide: BorderSide(color:Colors.blue,width: 1)
+                                                         ),
+                                                       )
+                                                   ),
+                                                   /// TextField Description
+                                                   const SizedBox(height:20,),
+                                                   TextFormField(
+                                                       maxLines: 2,
+                                                       textAlignVertical: TextAlignVertical.center,
+                                                       decoration: InputDecoration(
+                                                         contentPadding: EdgeInsets.only(top: 30),
+                                                         prefixIcon: Icon(Icons.description_outlined,color: Colors.grey,),
+                                                         labelText: "Description",
+                                                         hintText: "Enter Task Details...",
+                                                         enabledBorder: OutlineInputBorder(
+                                                             borderRadius: BorderRadius.circular(10),
+                                                             borderSide: BorderSide(color:Colors.grey.shade500,width: 1)
+                                                         ),
+                                                         focusedBorder: OutlineInputBorder(
+                                                             borderRadius: BorderRadius.circular(15),
+                                                             borderSide: BorderSide(color:Colors.blue,width: 1)
+                                                         ),
+                                                       )
+                                                   ),
+                                                   const SizedBox(height:20,),
+                                                   /// DueDate Field
+                                                   TextFormField(
+                                                     keyboardType: TextInputType.number,
+                                                       readOnly: false,
+                                                       textAlignVertical: TextAlignVertical.center,
+                                                       decoration: InputDecoration(
+                                                         prefixIcon: Icon(Icons.calendar_month,color: Colors.grey,),
+                                                         hintText: "Due Date",
+                                                         enabledBorder: OutlineInputBorder(
+                                                             borderRadius: BorderRadius.circular(5),
+                                                             borderSide: BorderSide(color:Colors.grey.shade500,width: 1)
+                                                         ),
+                                                         focusedBorder: OutlineInputBorder(
+                                                             borderRadius: BorderRadius.circular(5),
+                                                             borderSide: BorderSide(color:Colors.blue,width: 1)
+                                                         ),
+                                                       )
+                                                   ),
+                                                   SizedBox(height: 20,),
+                                                   /// Add Task Button
+                                                   Row(
+                                                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                     children: [
+                                                       ElevatedButton(
+                                                         style: ElevatedButton.styleFrom(
+                                                           fixedSize: Size(150, 10),
+                                                           backgroundColor: Colors.indigoAccent,
+                                                           foregroundColor: Colors.white,
+                                                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                                         ),
+                                                         onPressed: (){
+
+                                                           /// add function soon
+
+                                                         },
+                                                         child: Text("Update Task",style: TextStyle(fontSize: 18,),
+                                                         ),
+                                                       ),
+                                                       /// Cancel Button
+                                                       ElevatedButton(
+                                                         style: ElevatedButton.styleFrom(
+                                                           fixedSize: Size(150, 10),
+                                                           backgroundColor: Colors.red,
+                                                           foregroundColor: Colors.white,
+                                                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                                         ),
+                                                         onPressed: (){
+                                                           Navigator.of(context,rootNavigator: true).pop();
+                                                         },
+                                                         child: Text("Cancel",style: TextStyle(fontSize: 18,),
+                                                         ),
+                                                       ),
+                                                     ],
+                                                   )
+                                               
+                                                 ],
+                                               ),
+                                             ),
+                                           ),
+                                         ),
+
+                                       );
+
+                                     });
+                                  },
+                                    child: Icon(FontAwesomeIcons.penToSquare,
+                                        color: Colors.indigo, size: 18),
+                                  ),
+                                ),
                                 SizedBox(width: 20),
                                 Icon(FontAwesomeIcons.trash,
                                     color: Colors.red, size: 18),
