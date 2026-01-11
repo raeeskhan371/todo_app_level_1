@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:todo_app_level_1/Data/LocalData/db_helper_sqfLite.dart';
 import 'package:todo_app_level_1/Screen/Add_Screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -8,7 +9,25 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<Map<String, dynamic>> Tasks = [];
+  /// Task List
+  List<Map<String, dynamic>> task = [];
+   late DbHelper dbRef;
+  @override
+  void initState() {
+    super.initState();
+    dbRef=DbHelper.getinstance;
+    getnote();
+
+  }
+
+  Future<void> getnote()async{
+    task=await dbRef.readnote();
+    setState(() {
+
+    });
+  }
+
+
 
   /// Toggler Button State
   bool isAllSelected = true;
@@ -31,7 +50,8 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
 
       /// Body Section
-      body: Container(
+      body: task.isEmpty?Center(child: Text("No Task Yet")):
+      Container(
         color: Colors.white,
         child: Padding(
           padding: const EdgeInsets.only(top: 30, left: 8, right: 8),
@@ -127,10 +147,8 @@ class _HomeScreenState extends State<HomeScreen> {
               /// List TileTask Card
               Flexible(
                 child: ListView.builder(
-                  itemCount: Tasks.length,
+                  itemCount: task.length,
                   itemBuilder: (context, index) {
-                    final task = Tasks[index];
-
                     return Card(
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20)),
@@ -140,24 +158,25 @@ class _HomeScreenState extends State<HomeScreen> {
                             borderRadius: BorderRadius.circular(20)),
                         tileColor: Colors.white,
                         leading: GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              isCompletedSelected = !isCompletedSelected;
-                            });
+                          onTap: () async{
+                           bool ischeacked=task[index][DbHelper.Table_Colum_Checked]==1;
+                           await dbRef.updateNote(seNo: task[index][DbHelper.Table_Colum_SEno], title: task[index][DbHelper.Table_Colum_Title], description: task[index][DbHelper.Table_Colum_Description], date: task[index][DbHelper.Table_Colum_Date], Checked: ischeacked?0:1);
+                           getnote();
+
                           },
                           child: Container(
                             width: 25,
                             height: 25,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(100),
-                              color: isCompletedSelected
+                              color: task[index][DbHelper.Table_Colum_Checked]==1
                                   ? Colors.transparent
                                   : Colors.blue,
                               border: BoxBorder.all(color: Colors.blue, width: 1),
                             ),
                             child: Icon(
                               Icons.check,
-                              color: isCompletedSelected
+                              color: task[index][DbHelper.Table_Colum_Checked]==1
                                   ? Colors.transparent
                                   : Colors.white,
                               size: 20,
@@ -165,7 +184,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                         title: Text(
-                          task["title"] ?? "No Title",
+                          task[index][DbHelper.Table_Colum_Title],
                           style: TextStyle(
                               fontSize: 16, fontWeight: FontWeight.bold),
                         ),
@@ -177,7 +196,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               children: [
                                 Expanded(
                                   child: Text(
-                                    task["description"] ?? "No Description",
+                                    task[index][DbHelper.Table_Colum_Description],
                                     style: TextStyle(
                                         fontSize: 14, color: Colors.black),
                                   ),
@@ -189,6 +208,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                   },
 
                                   child: GestureDetector( onTap: (){
+                                    TextEditingController titleController=TextEditingController(
+                                      text: task[index][DbHelper.Table_Colum_Title]
+                                    );
+                                    TextEditingController desController=TextEditingController(text: task[index][DbHelper.Table_Colum_Description]);
+                                    TextEditingController dateController=TextEditingController(text: task[index][DbHelper.Table_Colum_Date]);
+
+
+
+
                                      showModalBottomSheet(context: context, builder:(context) {
                                        return Container(
                                          width: double.infinity,
@@ -205,6 +233,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                    SizedBox(height: 10,),
                                                    /// TextField Title
                                                    TextFormField(
+                                                     controller: titleController,
                                                        decoration: InputDecoration(
                                                          prefixIcon: Icon(Icons.title,color: Colors.grey,),
                                                          labelText: "Title",
@@ -222,6 +251,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                    /// TextField Description
                                                    const SizedBox(height:20,),
                                                    TextFormField(
+                                                     controller: desController,
                                                        maxLines: 2,
                                                        textAlignVertical: TextAlignVertical.center,
                                                        decoration: InputDecoration(
@@ -242,6 +272,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                    const SizedBox(height:20,),
                                                    /// DueDate Field
                                                    TextFormField(
+                                                     controller: dateController,
                                                      keyboardType: TextInputType.number,
                                                        readOnly: false,
                                                        textAlignVertical: TextAlignVertical.center,
@@ -259,7 +290,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                        )
                                                    ),
                                                    SizedBox(height: 20,),
-                                                   /// Add Task Button
+                                                   /// Update Task Button
                                                    Row(
                                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                                      children: [
@@ -271,8 +302,19 @@ class _HomeScreenState extends State<HomeScreen> {
                                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                                          ),
                                                          onPressed: (){
+                                                           String newtitle=titleController.text.trim();
+                                                           String newdesc=desController.text.trim();
+                                                           String newdate=dateController.text.trim();
+                                                           int Checked=task[index][DbHelper.Table_Colum_Checked];
+                                                           if(newtitle.isEmpty||newdesc.isEmpty||newdate.isEmpty){
+                                                             return;
+                                                           }
+                                                           dbRef.updateNote(seNo: task[index][DbHelper.Table_Colum_SEno], title: newtitle, description: newdesc, date: newdate, Checked: Checked);
+                                                           getnote();
+                                                           Navigator.pop(context);
 
-                                                           /// add function soon
+
+
 
                                                          },
                                                          child: Text("Update Task",style: TextStyle(fontSize: 18,),
@@ -294,7 +336,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                        ),
                                                      ],
                                                    )
-                                               
+
                                                  ],
                                                ),
                                              ),
@@ -310,15 +352,22 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 ),
                                 SizedBox(width: 20),
-                                Icon(FontAwesomeIcons.trash,
-                                    color: Colors.red, size: 18),
+                                GestureDetector( onTap: ()async{
+                                  await dbRef.deletenote(seNo: task[index][DbHelper.Table_Colum_SEno]);
+                                  getnote();
+                                },
+
+
+                                  child: Icon(FontAwesomeIcons.trash,
+                                      color: Colors.red, size: 18),
+                                ),
                               ],
                             ),
                             Container(
                               width: 100,
                               height: 30,
                               child: Text(
-                                task["dueDate"] ?? "No Due Date",
+                                task[index][DbHelper.Table_Colum_Date] ,
                                 style: TextStyle(
                                     fontSize: 14, color: Colors.grey),
                               ),
@@ -338,13 +387,10 @@ class _HomeScreenState extends State<HomeScreen> {
       /// Floating Action Button
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.indigoAccent,
-        onPressed: () async {
-          final Map<String, dynamic>? newtask = await Navigator.push(
-              context, MaterialPageRoute(builder: (context) => AddTask()));
-          if (newtask != null) {
-            setState(() {
-              Tasks.add(newtask);
-            });
+        onPressed: () async{
+          final result=await Navigator.push(context, MaterialPageRoute(builder: (context)=>AddTask()));
+          if(result==true){
+            getnote();
           }
         },
         child: Icon(Icons.add, color: Colors.white),
